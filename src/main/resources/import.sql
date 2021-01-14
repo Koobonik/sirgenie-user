@@ -1,0 +1,15 @@
+-- CREATE TABLE user (
+--   id int(11) NOT NULL AUTO_INCREMENT,
+--   name varchar(255) NOT NULL,
+--   created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+--   updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+--   PRIMARY KEY (id)
+-- );
+--
+-- INSERT INTO testdb.`user`
+-- (`id`,
+--  `name`,
+--  `created_at`,
+--  `updated_at`)
+-- VALUES
+-- (0, 'dev_koo', '2021-01-14 20:08:00', '2021-01-14 20:08:00');

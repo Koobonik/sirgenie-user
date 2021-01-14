@@ -1,0 +1,13 @@
+spring:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  datasource:
+    driver-class-name: org.h2.Driver  #h2 드라이버 설정
+    url: jdbc:h2:mem:testdb  #접속 URL
+    username: sa  # 사용자 이름 (로그인 시 사용)
+    password: # 사용자 암호 (로그인 시 사용)
+  jpa:
+    hibernate:
+      ddl-auto: create
