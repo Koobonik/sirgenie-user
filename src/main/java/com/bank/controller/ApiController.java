@@ -27,8 +27,12 @@ public class ApiController {
     // 해당 코드도 마찬가지로 유저 검증은 생략
     @PostMapping("uploadPictures")
     public ResponseEntity<?> uploadPictures(@RequestParam int userId, @RequestBody List<PictureRequestDto> pictureRequestDto){
+        // dto에 태그 추가해주자
         return pictureService.savePictures(userId, pictureRequestDto);
     }
+
+
+
     /*
     * 1. 생성순서대로 폴더 조회 (폴더에 created_at 넣어주자)
     */
