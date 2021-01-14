@@ -33,13 +33,11 @@ public class FolderService {
     // 실제로는 유저의 정보를 담고 있는 세션이라던가 jwt를 받아오는 것이 검증을 위해 맞지만 간단한 코딩테스트 이므로
     // 유저 정보를 받아온다고 가정하며 그 과정은 생략하도록 하겠습니다.
     @Transactional
-    public ResponseEntity<?> createFolder(int userId, String folderName) throws IOException {
+    public ResponseEntity<?> createFolder(int userId, String folderName){
         Folder folder = new Folder();
         folder.setUserId(userId);
         folder.setFolderName(folderName);
-        Timestamp today = new Timestamp(new Date().getTime());
-        folder.setCreatedAt(today);
-        folder.setUpdatedAt(today);
+        folder.setFolderPoint(1000);
         Folder folder1;
         try {
             // 가장 최근에 있었던 포인트 입출금 내역
@@ -51,8 +49,6 @@ public class FolderService {
                 pointHistory.setInputPoint(1000);
                 pointHistory.setUserPoint(pointHistory.getUserPoint() + pointHistory.getInputPoint());
                 pointHistory.setUserId(userId);
-                pointHistory.setCreatedAt(today);
-                pointHistory.setUpdatedAt(today);
                 pointHistoryRepository.save(pointHistory);
             }
             else {
@@ -62,18 +58,17 @@ public class FolderService {
                 pointHistory1.setInputPoint(1000);
                 pointHistory1.setUserPoint(pointHistory.getUserPoint() + pointHistory1.getInputPoint());
                 pointHistory.setUserId(userId);
-                pointHistory.setCreatedAt(today);
-                pointHistory.setUpdatedAt(today);
                 pointHistoryRepository.save(pointHistory1);
             }
 
-
-            folder1 = folderRepository.save(folder);
-
+            if(folderRepository.findByUserIdAndFolderName(userId, folderName) == null){
+                folder1 = folderRepository.save(folder);
+                return new ResponseEntity<>(folder1, HttpStatus.OK);
+            }
         } catch (Exception e){
 //            throw new IOException("저장중 에러가 발생했습니다.");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(folder1, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

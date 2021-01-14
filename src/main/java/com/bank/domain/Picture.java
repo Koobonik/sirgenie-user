@@ -1,8 +1,6 @@
 package com.bank.domain;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -11,7 +9,10 @@ import java.util.List;
 @Getter
 @Setter
 @Entity(name = "picture")
-public class Picture {
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class Picture extends TimeUtil {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
