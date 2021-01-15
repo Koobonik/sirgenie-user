@@ -41,7 +41,7 @@ public class PictureService {
         int usePoint = pictureRequestDtoList.size() * 100; // 사용해야할 포인트
         if(point < usePoint){
             // 안될경우
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+            return new ResponseEntity<>("포인트가 부족합니다.",HttpStatus.CONFLICT);
         }
         // 10장올려야하는데 1번 폴더에 900 있고 2번 폴더에 1000 있다고 가정
         for(Folder h : folder){
