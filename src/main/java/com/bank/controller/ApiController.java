@@ -31,6 +31,11 @@ public class ApiController {
         return pictureService.savePictures(userId, pictureRequestDto);
     }
 
+    @GetMapping("readTop10")
+    public ResponseEntity<?> readTop10(){
+        return pictureService.readTop10Tag();
+    }
+
 
 
     /*

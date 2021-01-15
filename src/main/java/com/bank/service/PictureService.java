@@ -10,9 +10,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -63,13 +61,59 @@ public class PictureService {
             }
         }
 
-
+        int minus = pictureRequestDtoList.size() * 100;
+        PointHistory pointHistory2 = pointHistoryRepository.findByUserId(userId);
+        PointHistory pointHistory = new PointHistory();
+        pointHistory.setType("사진 업로드");
+        pointHistory.setOutputPoint(minus);
+        pointHistory.setUserPoint(pointHistory2.getUserPoint() - minus);
+        pointHistory.setUserId(userId);
+        pointHistoryRepository.save(pointHistory);
+        // 폴더 이름 검증도 해야함
         List<Picture> pictureList = new ArrayList<>();
         for(PictureRequestDto picture : pictureRequestDtoList){
+            if(folderRepository.findByUserIdAndFolderName(userId, picture.getFolderName()) == null){
+                return new ResponseEntity<>("존재하지 않는 폴더에 사진을 올릴 수 없습니다.", HttpStatus.CONFLICT);
+            }
             pictureList.add(picture.toEntity());
+
         }
         saveAll(pictureList);
         return new ResponseEntity<>(pictureList, HttpStatus.OK);
+    }
+
+    // 유저 각 개인마다의 통계인지 전체 사진마다의 통계인지 명확하게 명시되어 있지 않기에 전체로 판단하여 추출
+    // -> 통계라 함은 수많은 데이터 셋에서 무언가의 가치를 찾는 것이기에 전체 사진에서 흐름을 찾을 수 있는 것이 좋다고 생각합니다.
+    // 개인이라 하더라도 구현에 전혀 문제 없음 소스코드 한줄 바꾸어주면 됨. findAll에서 유저 아이디에 맞게만 값 찾아내면 끝.
+    public ResponseEntity<?> readTop10Tag(){
+        List<Picture> pictureList = pictureRepository.findAll();
+        Map<String, Integer> h = new HashMap<>();
+        for(Picture picture : pictureList){
+            for(String str: picture.getTag()){
+                if(h.get(str) == null){
+                    // 처음에 값이 없을 경우
+                    h.put(str, 1);
+                }
+                else {
+                    // 값이 있을경우
+                    h.put(str, h.get(str) + 1);
+                }
+                // h.merge(str, 1, Integer::sum); // 위에 if문은 해당 라인으로 대체 가능함
+            }
+        }
+        ArrayList keySetList = new ArrayList(h.keySet());
+        Collections.sort(keySetList, (o1, o2) -> (h.get(o2).compareTo(h.get(o1))));
+        Map<String, Integer> hi = new HashMap<>();
+        int count = 0;
+        for(Object key : keySetList) {
+            System.out.println("key : " + key + " / " + "value : " + h.get(key));
+            hi.put(key.toString(), h.get(key));
+            if(count == 9){
+                return new ResponseEntity<>(hi, HttpStatus.OK);
+            }
+            count++;
+        }
+        return new ResponseEntity<>(hi, HttpStatus.OK);
     }
 
 }
